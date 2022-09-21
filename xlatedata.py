@@ -2,6 +2,7 @@ from pickle import TRUE
 import time
 import datetime
 import numpy
+import random as rnd
 
 
 fnames = [ "data/UERecode1.txt"] # "data/velodyne_points.csv",
@@ -13,10 +14,12 @@ def getCoord(tField):
 
 def getTime(tField):
     global zeroTimeVal
+    drift = rnd.random() * 0.20
     tf = tField.split(":")
     myTime = tf[1] + ":" + tf[2] + ":" + tf[3]
     myDate = tf[1][:-3]
-    testTime = time.mktime(datetime.datetime.strptime(myTime, "%Y-%m-%d %H:%M:%S").timetuple())
+    testTime = time.mktime(datetime.datetime.strptime(myTime, "%Y-%m-%d %H:%M:%S").timetuple()) + drift
+
     if (zeroTimeVal == -1):
         zeroTimeVal = testTime
         testTime = 0 #Initial time value is zeroed out
@@ -32,7 +35,7 @@ def proc_uer_line(instr):
     x = getCoord(fields[2])
     y = getCoord(fields[3])
     z = 0.0
-    return("%16.0f,%f,%f,%f" %(cTime , x ,y ,z))
+    return("%8.3f,%f,%f,%f" %(cTime , x ,y ,z))
 
 
 for nm in fnames:
