@@ -4,10 +4,28 @@
 # University of Toronto Institute for Aerospace Studies
 import pickle
 import numpy as np
+import random as rnd
 from numpy import matmul
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from rotations import angle_normalize, rpy_jacobian_axis_angle, skew_symmetric, Quaternion
+
+
+def alter_gt(old_gt):
+    print(vars(old_gt))
+    print(type(old_gt._p_init))
+    new_p_init = np.array([None])
+    for x in old_gt._p_init:
+        tX = x
+        print(rnd.random())
+        tX[0] = x[0] * (rnd.random() * 100)
+        tX[1] = x[1] * (rnd.random() * 30)
+        tX[2] = x[1] * (rnd.random() * 70)
+        print(tX)
+        print(x)
+        np.append(new_p_init, tX)
+    old_gt._p_init = new_p_init
+    return old_gt
 
 #### 1. Data ###################################################################################
 
@@ -44,6 +62,8 @@ with open('data/pt1_data.pkl', 'rb') as file:
 #     t: Timestamps in ms.
 ################################################################################################
 gt = data['gt']
+## alter gt data
+gt = alter_gt(gt)
 imu_f = data['imu_f']
 imu_w = data['imu_w']
 gnss = data['gnss']
@@ -221,8 +241,8 @@ est_traj_fig = plt.figure()
 ax = est_traj_fig.add_subplot(111, projection='3d')
 ax.plot(p_est[:,0], p_est[:,1], p_est[:,2], label='Estimated')
 ax.plot(gt.p[:,0], gt.p[:,1], gt.p[:,2], label='Ground Truth')
-ax.set_xlabel('Easting [m]')
-ax.set_ylabel('Northing [m]')
+ax.set_xlabel('East [m]')
+ax.set_ylabel('North [m]')
 ax.set_zlabel('Up [m]')
 ax.set_title('Ground Truth and Estimated Trajectory')
 ax.set_xlim(0, 200)
